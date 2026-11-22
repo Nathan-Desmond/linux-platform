@@ -1,0 +1,20 @@
+# Secrets - never commit these
+*.pem
+*.key
+id_*
+!id_*.pub
+.env
+*.vault_pass
+
+# Ansible
+*.retry
+
+# Terraform (for later stages)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Editor / OS clutter
+.vscode/
+.DS_Store
