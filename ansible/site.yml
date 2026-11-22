@@ -1,6 +1,7 @@
 ---
-- name: Apply baseline hardening to all servers
+- name: Apply baseline configuration to all servers
   hosts: all
   become: true
   roles:
     - common
+    - docker
