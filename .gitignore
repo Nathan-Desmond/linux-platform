@@ -18,3 +18,8 @@ id_*
 # Editor / OS clutter
 .vscode/
 .DS_Store
+
+# Python
+.venv/
+__pycache__/
+*.pyc
