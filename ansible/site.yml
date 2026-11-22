@@ -5,3 +5,9 @@
   roles:
     - common
     - docker
+
+- name: Deploy the application to web servers
+  hosts: web
+  become: true
+  roles:
+    - app

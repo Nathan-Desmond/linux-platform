@@ -1,0 +1,54 @@
+---
+- name: Create application directory
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy application files to the server
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../app/{{ item }}"
+    dest: "{{ app_dir }}/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ app_source_files }}"
+  register: app_copy
+
+- name: Build the application image
+  community.docker.docker_image:
+    name: "{{ app_name }}"
+    tag: "{{ app_version }}"
+    source: build
+    build:
+      path: "{{ app_dir }}"
+    force_source: "{{ app_copy.changed }}"
+    state: present
+
+- name: Run the application container
+  community.docker.docker_container:
+    name: "{{ app_name }}"
+    image: "{{ app_name }}:{{ app_version }}"
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{ app_host_port }}:{{ app_container_port }}"
+    env:
+      APP_VERSION: "{{ app_version }}"
+
+- name: Firewall - allow HTTP
+  community.general.ufw:
+    rule: allow
+    port: "{{ app_host_port | string }}"
+    proto: tcp
+
+- name: Smoke test - wait for the app to report healthy
+  ansible.builtin.uri:
+    url: "http://localhost:{{ app_host_port }}/health"
+    return_content: true
+  register: app_health
+  until: app_health.status == 200
+  retries: 10
+  delay: 3

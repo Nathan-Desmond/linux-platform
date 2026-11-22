@@ -1,0 +1,17 @@
+---
+app_name: homelab-app
+app_version: "1.0.0"
+
+# Where the app files live on the server
+app_dir: /opt/homelab-app
+
+# Port on the server -> port inside the container
+app_host_port: 80
+app_container_port: 5000
+
+# Files copied from the repo's app/ folder to the server
+app_source_files:
+  - app.py
+  - requirements.txt
+  - Dockerfile
+  - .dockerignore
