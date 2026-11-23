@@ -20,15 +20,11 @@
     state: present
   register: docker_repo
 
-- name: Refresh apt cache after adding the Docker repository
-  ansible.builtin.apt:
-    update_cache: true
-  when: docker_repo.changed
-
 - name: Install Docker Engine
   ansible.builtin.apt:
     name: "{{ docker_packages }}"
     state: present
+    update_cache: "{{ docker_repo.changed }}"
 
 - name: Make sure Docker is running and starts on boot
   ansible.builtin.service:

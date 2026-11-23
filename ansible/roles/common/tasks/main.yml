@@ -4,6 +4,7 @@
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
+  changed_when: false
 
 - name: Install security packages
   ansible.builtin.apt:
@@ -15,7 +16,7 @@
 # ---------- Admin user ----------
 - name: Create admin user
   ansible.builtin.user:
-    name: "{{ admin_user }}"
+    name: "{{ common_admin_user }}"
     shell: /bin/bash
     groups: sudo
     append: true
@@ -23,14 +24,14 @@
 
 - name: Add SSH public key for admin user
   ansible.posix.authorized_key:
-    user: "{{ admin_user }}"
-    key: "{{ lookup('ansible.builtin.file', admin_ssh_pubkey) }}"
+    user: "{{ common_admin_user }}"
+    key: "{{ lookup('ansible.builtin.file', common_admin_ssh_pubkey) }}"
     state: present
 
 - name: Allow admin user to use sudo without a password
   ansible.builtin.copy:
-    dest: "/etc/sudoers.d/{{ admin_user }}"
-    content: "{{ admin_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    dest: "/etc/sudoers.d/{{ common_admin_user }}"
+    content: "{{ common_admin_user }} ALL=(ALL) NOPASSWD:ALL\n"
     owner: root
     group: root
     mode: "0440"
